@@ -142,25 +142,23 @@ class FixedOrderStrategy(Strategy):
 
 
 def test_day_of_week_sequence():
-    """Day 1 should be a tuesday (first open day after monday)."""
     sim = make_sim()
-    # Day 1 = index 0 in the loop. Day number maps to DAY_NAMES[(day - 1) % 7].
-    # We need to verify the mapping is consistent.
-    assert Simulation.DAY_NAMES[0] == "monday"
-    assert Simulation.DAY_NAMES[1] == "tuesday"
-    assert Simulation.DAY_NAMES[6] == "sunday"
+    assert sim._day_of_week(1) == "monday"
+    assert sim._day_of_week(2) == "tuesday"
+    assert sim._day_of_week(7) == "sunday"
+    assert sim._day_of_week(8) == "monday"  # wraps back to monday
 
 
 def test_monday_no_customers():
-    """On Monday (day 1, 8, 15, ...) the restaurant is closed."""
     sim = make_sim()
     sim._current_day = 1  # monday
-    low, high = Simulation.TRAFFIC["monday"]
-    assert low == 0 and high == 0
+    customers = sim._generate_customers()
+    assert customers == []
 
 
 def test_initial_order_delivered_before_day_1():
-    """Initial order should be in inventory when the simulation starts."""
+    checked = []
+
     class BuyBeefStrategy(Strategy):
         def __init__(self, menu, ingredients):
             self.menu = menu
@@ -170,14 +168,15 @@ def test_initial_order_delivered_before_day_1():
             return {"beef": 5}
 
         def decide_orders(self, state):
-            # On day 1, check that beef is in inventory
             if state.day == 1:
-                assert state.inventory["beef"] == 5
+                checked.append(state.inventory["beef"])
             return {}
 
     random.seed(0)
     sim = Simulation(MENU, INGREDIENTS, BuyBeefStrategy)
     sim.run()
+    assert len(checked) == 1
+    assert checked[0] == 5
 
 
 def test_simulation_runs_60_days():
