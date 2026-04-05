@@ -53,5 +53,18 @@ class NaiveStrategy(Strategy):
         return order
 
 
-class DefaultStrategy(NaiveStrategy):
-    pass
+class AdvancedHeuristicStrategy(Strategy):
+    def __init__(self, menu: list[MenuItem], ingredients: dict[str, Ingredient]):
+        self.menu = menu
+        self.ingredients = ingredients
+        # Pre-calculate daily demand weights
+        self.demand_weights = {} 
+        # Logic to estimate demand per ingredient...
+
+    def initial_order(self, budget: int) -> dict[str, int]:
+        # Logic for day 0 order
+        return {}
+
+    def decide_orders(self, state: DayState) -> dict[str, int]:
+        # Logic for daily replenishment
+        return {}
