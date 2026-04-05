@@ -4,7 +4,7 @@ from menu import Ingredient, MenuItem, INGREDIENTS, MENU
 def test_ingredient_fields():
     bun = INGREDIENTS["bun"]
     assert bun.name == "bun"
-    assert bun.cost == 1
+    assert bun.cost == 50
     assert bun.shelf_life == 3
 
 
@@ -15,7 +15,7 @@ def test_all_ingredients_exist():
 
 def test_menu_item_fields():
     burger = next(m for m in MENU if m.name == "Burger")
-    assert burger.price == 12
+    assert burger.price == 1200
     assert burger.recipe == {"bun": 1, "beef": 1, "lettuce": 1, "tomato": 1}
 
 

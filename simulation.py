@@ -62,7 +62,7 @@ class Strategy(ABC):
 
 class Simulation:
     DURATION = 60
-    STARTING_BUDGET = 1000
+    STARTING_BUDGET = 100000
     DAY_NAMES = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
     TRAFFIC = {
         "monday": (0, 0),

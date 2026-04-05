@@ -32,7 +32,7 @@ def run_simulations(strategy_class: type[Strategy], n_runs: int = 10) -> Simulat
 if __name__ == "__main__":
     from strategy import NaiveStrategy
 
-    result = run_simulations(NaiveStrategy)
+    result = run_simulations(NaiveStrategy, n_runs=100)
     print(f"Average score: {result['average_score']:.0f}")
     print()
     for i, run in enumerate(result["runs"], 1):

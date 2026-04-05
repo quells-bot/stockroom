@@ -107,12 +107,12 @@ def test_fill_order_stockout():
 
 def test_place_order_within_budget():
     sim = make_sim()
-    sim._budget = 100
+    sim._budget = 10000
     sim._current_day = 1
     random.seed(42)
     sim._place_order({"beef": 3, "bun": 5})
     # cost = 3*3 + 5*1 = 14
-    assert sim._budget == 86
+    assert sim._budget == 9150
     assert len(sim._pending_deliveries) == 2
     for pd in sim._pending_deliveries:
         assert pd.ordered_on == 1
@@ -121,10 +121,10 @@ def test_place_order_within_budget():
 
 def test_place_order_exceeds_budget():
     sim = make_sim()
-    sim._budget = 5
+    sim._budget = 500
     sim._current_day = 1
     sim._place_order({"beef": 3})  # cost = 9, exceeds 5
-    assert sim._budget == 5  # unchanged
+    assert sim._budget == 500  # unchanged
     assert len(sim._pending_deliveries) == 0
 
 
