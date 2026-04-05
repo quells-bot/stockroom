@@ -1,7 +1,6 @@
 import random
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import TypedDict
 from menu import Ingredient, MenuItem
 
 
@@ -20,7 +19,7 @@ class StockoutEvent:
 
 
 @dataclass
-class PendingDeliveryInfo(TypedDict):
+class PendingDeliveryInfo:
     ingredient: str
     quantity: int
     days_until_arrival: int
@@ -144,7 +143,7 @@ class Simulation:
     def _build_day_state(self, revenue: int, waste: dict[str, int], stockouts: list[StockoutEvent], history: list[DayState]) -> DayState:
         inventory_counts = {name: len(expiry_list) for name, expiry_list in self._inventory.items()}
         visible_deliveries = [
-            PendingDeliveryInfo({"ingredient": pd.ingredient, "quantity": pd.quantity, "days_until_arrival": pd.arrives_on - self._current_day})
+            PendingDeliveryInfo(ingredient=pd.ingredient, quantity=pd.quantity, days_until_arrival=pd.arrives_on - self._current_day)
             for pd in self._pending_deliveries
         ]
         return DayState(

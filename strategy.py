@@ -40,8 +40,8 @@ class NaiveStrategy(Strategy):
         for name, daily in self._daily_estimate.items():
             on_hand = state.inventory.get(name, 0)
             pending = sum(
-                d["quantity"] for d in state.pending_deliveries
-                if d["ingredient"] == name
+                d.quantity for d in state.pending_deliveries
+                if d.ingredient == name
             )
             target = daily * 3
             need = target - on_hand - pending
@@ -103,8 +103,8 @@ class AdvancedHeuristicStrategy(Strategy):
         for name, daily in self._daily_estimate.items():
             on_hand = state.inventory.get(name, 0)
             pending = sum(
-                d["quantity"] for d in state.pending_deliveries
-                if d["ingredient"] == name
+                d.quantity for d in state.pending_deliveries
+                if d.ingredient == name
             )
             target = int(daily * 4)
             need = target - on_hand - pending
