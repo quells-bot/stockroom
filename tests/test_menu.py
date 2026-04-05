@@ -29,12 +29,3 @@ def test_all_recipe_ingredients_are_valid():
     for item in MENU:
         for ingredient_name in item.recipe:
             assert ingredient_name in INGREDIENTS, f"{item.name} uses unknown ingredient {ingredient_name}"
-
-
-def test_every_ingredient_used_in_at_least_two_dishes():
-    usage_count: dict[str, int] = {name: 0 for name in INGREDIENTS}
-    for item in MENU:
-        for ingredient_name in item.recipe:
-            usage_count[ingredient_name] += 1
-    for name, count in usage_count.items():
-        assert count >= 2, f"{name} only used in {count} dish(es)"

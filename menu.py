@@ -30,8 +30,8 @@ INGREDIENTS: dict[str, Ingredient] = {
 MENU: list[MenuItem] = [
     MenuItem("Burger", price=12, recipe={"bun": 1, "beef": 1, "lettuce": 1, "tomato": 1}),
     MenuItem("Cheeseburger", price=14, recipe={"bun": 1, "beef": 1, "lettuce": 1, "tomato": 1, "cheese": 1}),
-    MenuItem("Grilled Chicken Sandwich", price=13, recipe={"bun": 1, "chicken": 1, "lettuce": 1, "tomato": 1, "pasta": 1}),
+    MenuItem("Grilled Chicken Sandwich", price=13, recipe={"bun": 1, "chicken": 1, "lettuce": 1, "tomato": 1}),
     MenuItem("Cheese Chicken Sandwich", price=15, recipe={"bun": 1, "chicken": 1, "lettuce": 1, "tomato": 1, "cheese": 1}),
     MenuItem("Caesar Salad", price=10, recipe={"lettuce": 1, "chicken": 1, "parmesan": 1, "croutons": 1}),
-    MenuItem("Pasta Bolognese", price=15, recipe={"pasta": 1, "beef": 1, "tomato": 1, "parmesan": 1, "croutons": 1}),
+    MenuItem("Pasta Bolognese", price=15, recipe={"pasta": 1, "beef": 1, "tomato": 1, "parmesan": 1}),
 ]
