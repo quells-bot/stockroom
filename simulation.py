@@ -73,7 +73,7 @@ class Simulation:
     def _receive_deliveries(self):
         remaining = []
         for delivery in self._pending_deliveries:
-            if delivery.arrives_on == self._current_day:
+            if delivery.arrives_on <= self._current_day:
                 shelf_life = self._ingredients[delivery.ingredient].shelf_life
                 expiry = self._current_day + shelf_life
                 self._inventory[delivery.ingredient].extend([expiry] * delivery.quantity)
