@@ -51,3 +51,7 @@ class NaiveStrategy(Strategy):
                     order[name] = need
                     total += cost
         return order
+
+
+class DefaultStrategy(NaiveStrategy):
+    pass
