@@ -204,3 +204,11 @@ def test_do_nothing_strategy_has_zero_revenue():
     # All orders are stockouts since no inventory
     assert result.dissatisfaction > 0
     assert result.score < Simulation.STARTING_BUDGET
+
+
+def test_naive_strategy_earns_positive_revenue():
+    from strategy import NaiveStrategy
+    random.seed(0)
+    sim = Simulation(MENU, INGREDIENTS, NaiveStrategy)
+    result = sim.run()
+    assert result.final_budget > Simulation.STARTING_BUDGET
