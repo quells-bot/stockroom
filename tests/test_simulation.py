@@ -212,3 +212,16 @@ def test_naive_strategy_earns_positive_revenue():
     sim = Simulation(MENU, INGREDIENTS, NaiveStrategy)
     result = sim.run()
     assert result.final_budget > Simulation.STARTING_BUDGET
+
+
+def test_receive_deliveries_uses_arrival_day_for_expiry():
+    """Expiry should be based on arrives_on, not current_day."""
+    sim = make_sim()
+    # Delivery that arrived on day 3 but is being processed on day 4
+    sim._pending_deliveries = [
+        PendingDelivery("beef", 1, ordered_on=1, arrives_on=3),
+    ]
+    sim._current_day = 4
+    sim._receive_deliveries()
+    # expiry should be arrives_on(3) + shelf_life(4) = 7, NOT current_day(4) + shelf_life(4) = 8
+    assert sim._inventory["beef"] == [7]

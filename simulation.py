@@ -1,6 +1,7 @@
 import random
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from typing import TypedDict
 from menu import Ingredient, MenuItem
 
 
@@ -18,13 +19,19 @@ class StockoutEvent:
     price: int
 
 
+class PendingDeliveryInfo(TypedDict):
+    ingredient: str
+    quantity: int
+    days_until_arrival: int
+
+
 @dataclass
 class DayState:
     day: int
     day_of_week: str
     budget: int
     inventory: dict[str, int]
-    pending_deliveries: list[dict]
+    pending_deliveries: list[PendingDeliveryInfo]
     today_revenue: int
     today_waste: dict[str, int]
     today_stockouts: list[StockoutEvent]
@@ -83,7 +90,7 @@ class Simulation:
         for delivery in self._pending_deliveries:
             if delivery.arrives_on <= self._current_day:
                 shelf_life = self._ingredients[delivery.ingredient].shelf_life
-                expiry = self._current_day + shelf_life
+                expiry = delivery.arrives_on + shelf_life
                 self._inventory[delivery.ingredient].extend([expiry] * delivery.quantity)
             else:
                 remaining.append(delivery)
@@ -136,7 +143,7 @@ class Simulation:
     def _build_day_state(self, revenue: int, waste: dict[str, int], stockouts: list[StockoutEvent], history: list[DayState]) -> DayState:
         inventory_counts = {name: len(expiry_list) for name, expiry_list in self._inventory.items()}
         visible_deliveries = [
-            {"ingredient": pd.ingredient, "quantity": pd.quantity, "days_since_ordered": self._current_day - pd.ordered_on}
+            {"ingredient": pd.ingredient, "quantity": pd.quantity, "days_until_arrival": pd.arrives_on - self._current_day}
             for pd in self._pending_deliveries
         ]
         return DayState(
