@@ -1,8 +1,21 @@
+from typing import TypedDict
+
 from menu import MENU, INGREDIENTS
 from simulation import Simulation, Strategy
 
 
-def run_simulations(strategy_class: type[Strategy], n_runs: int = 10) -> dict:
+class RunResult(TypedDict):
+    score: int
+    final_budget: int
+    dissatisfaction: int
+
+
+class SimulationSummary(TypedDict):
+    average_score: float
+    runs: list[RunResult]
+
+
+def run_simulations(strategy_class: type[Strategy], n_runs: int = 10) -> SimulationSummary:
     runs = []
     for _ in range(n_runs):
         sim = Simulation(MENU, INGREDIENTS, strategy_class)
@@ -12,7 +25,7 @@ def run_simulations(strategy_class: type[Strategy], n_runs: int = 10) -> dict:
             "final_budget": result.final_budget,
             "dissatisfaction": result.dissatisfaction,
         })
-    average_score = sum(r["score"] for r in runs) / len(runs)
+    average_score = sum(r["score"] for r in runs) / len(runs) if runs else 0.0
     return {"average_score": average_score, "runs": runs}
 
 

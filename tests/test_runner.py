@@ -21,3 +21,9 @@ def test_each_run_has_score_breakdown():
     assert "score" in run
     assert "final_budget" in run
     assert "dissatisfaction" in run
+
+
+def test_average_score_matches_runs():
+    result = run_simulations(NaiveStrategy, n_runs=5)
+    expected = sum(r["score"] for r in result["runs"]) / 5
+    assert result["average_score"] == expected
