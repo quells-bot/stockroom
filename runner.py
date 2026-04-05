@@ -34,5 +34,5 @@ if __name__ == "__main__":
 
     strategies = [NaiveStrategy, AdvancedHeuristicStrategy, ForwardLookingHeuristicStrategy]
     for strategy_class in strategies:
-        result = run_simulations(strategy_class, n_runs=100)
+        result = run_simulations(strategy_class, n_runs=1000)
         print(f"{strategy_class.__name__}: avg={result['average_score']:.0f}")
