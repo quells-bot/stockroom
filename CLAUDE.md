@@ -3,46 +3,28 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Overview
-This repository contains a restaurant inventory management simulation. The goal is to implement an ordering `Strategy` that maximizes a score (calculated as `final_budget - dissatisfaction`) over a 60-day period.
+This repository contains a restaurant inventory management simulation. A `Simulation` engine runs a 60-day cycle; pluggable `Strategy` classes decide how much of each ingredient to order each day. The score is `final_budget - dissatisfaction`.
 
 ## Core Components
-- `simulation.py`: Contains the `Simulation` engine, which handles daily cycles (receiving deliveries, expiring inventory, generating customers, and processing orders).
-- `strategy.py`: The primary place for development. You implement a class inheriting from `Strategy` to decide how much of each ingredient to order.
-- `menu.py`: Defines the `INGREDIENT` list, their costs and shelf lives, and the `MENU` items with their recipes and prices.
-- `runner.py`: A script to run multiple simulations of a given strategy to evaluate its performance and stability.
+- `simulation.py`: The `Simulation` engine and `Strategy` ABC. Handles daily cycles: receiving deliveries, expiring inventory, generating customers, and processing orders. Also defines `DayState`, `SimulationResult`, and related dataclasses.
+- `strategy.py`: Ordering strategy implementations. See `STRATEGY.md` when working here.
+- `menu.py`: Defines `INGREDIENTS` (costs, shelf lives) and `MENU` items (recipes, prices). All prices and costs are in **cents** (e.g. a $12.00 burger is `1200`).
+- `runner.py`: Runs multiple simulations across all strategies and reports average scores.
 
-## Development Workflow
-
-### Running Simulations
-To evaluate a strategy, run the `runner.py` script. It executes a specified number of simulation runs and prints the average score and individual run details.
+## Running Simulations
 ```bash
 python runner.py
 ```
 
-### Implementing a New Strategy
+## Development Guidelines
 
-You **MUST NOT** modify any files other than `strategy.py`. You are allowed to read other files but **MUST NOT** modify them.
+- Any file may be modified except where task-specific instructions say otherwise.
+- `tests/*.py` are reserved for simulation correctness tests — do not add new test files there.
+- When working on strategies specifically, follow `STRATEGY.md`.
 
-You **MUST NOT** hard-code prices, ingredients, or menu items in your strategy. These are subject to change and your strategy algorithm should be generic across any menu. You **MAY** hard-code things to take the day-of-week traffic variability and delivery lead time into account, as these are fixed (but subject to random variation). You **MAY** introduce mutable state into your strategy class.
+## Strategy Interface
 
-1. Open `strategy.py`.
-2. Create a new class that inherits from `Strategy` (or `NaiveStrategy` for a simpler starting point).
-3. Implement `__init__`, `initial_order`, and `decide_orders`.
-4. Update `DefaultStrategy` inherit from your new class.
-5. Run `python runner.py` to test.
-
-### Key Simulation Parameters
-- **Duration**: 60 days.
-- **Starting Budget**: 100,000.
-- **Traffic**: Varies by day of the week (higher on weekends).
-- **Delivery Lead Time**: 3 to 5 days.
-- **Score**: `final_budget - dissatisfaction`.
-- **Dissatisfaction**: Occurs when a customer's order cannot be fulfilled due to missing ingredients.
-
-## Testing
-
-You **MUST NOT** write any new pytest tests in `tests/*.py`. These are reserved for testing the simulation.
-
-If you need to test something for your new strategy, write some throwaway script to test that portion.
-
-Your key metric for gauging the effectiveness of your strategy is the output from `runner.py`.
+`Strategy` subclasses receive `menu` and `ingredients` at construction, plus any keyword arguments forwarded from `Simulation` / `run_simulations`. Implement:
+- `__init__(self, menu, ingredients, **kwargs)`
+- `initial_order(self, budget) -> dict[str, int]`
+- `decide_orders(self, state: DayState) -> dict[str, int]`

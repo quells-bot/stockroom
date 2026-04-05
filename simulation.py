@@ -48,7 +48,7 @@ class SimulationResult:
 
 class Strategy(ABC):
     @abstractmethod
-    def __init__(self, menu: list[MenuItem], ingredients: dict[str, Ingredient]):
+    def __init__(self, menu: list[MenuItem], ingredients: dict[str, Ingredient], **kwargs):
         pass
 
     @abstractmethod
@@ -74,10 +74,10 @@ class Simulation:
         "sunday": (45, 60),
     }
 
-    def __init__(self, menu: list[MenuItem], ingredients: dict[str, Ingredient], strategy_class: type[Strategy]):
+    def __init__(self, menu: list[MenuItem], ingredients: dict[str, Ingredient], strategy_class: type[Strategy], **strategy_kwargs):
         self._menu = menu
         self._ingredients = ingredients
-        self._strategy = strategy_class(menu, ingredients)
+        self._strategy = strategy_class(menu, ingredients, **strategy_kwargs)
         self._budget = self.STARTING_BUDGET
         self._inventory: dict[str, list[int]] = {name: [] for name in ingredients}
         self._pending_deliveries: list[PendingDelivery] = []

@@ -202,7 +202,3 @@ class ForwardLookingHeuristicStrategy(Strategy):
                     total += cost
         
         return order
-
-
-class DefaultStrategy(ForwardLookingHeuristicStrategy):
-    pass
