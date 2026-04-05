@@ -19,6 +19,7 @@ class StockoutEvent:
     price: int
 
 
+@dataclass
 class PendingDeliveryInfo(TypedDict):
     ingredient: str
     quantity: int
@@ -130,7 +131,7 @@ class Simulation:
             )
 
     def _day_of_week(self, day: int) -> str:
-        return self.DAY_NAMES[(day - 1) % 7]
+        return self.DAY_NAMES[day % 7]
 
     def _generate_customers(self) -> list[MenuItem]:
         dow = self._day_of_week(self._current_day)
@@ -143,7 +144,7 @@ class Simulation:
     def _build_day_state(self, revenue: int, waste: dict[str, int], stockouts: list[StockoutEvent], history: list[DayState]) -> DayState:
         inventory_counts = {name: len(expiry_list) for name, expiry_list in self._inventory.items()}
         visible_deliveries = [
-            {"ingredient": pd.ingredient, "quantity": pd.quantity, "days_until_arrival": pd.arrives_on - self._current_day}
+            PendingDeliveryInfo({"ingredient": pd.ingredient, "quantity": pd.quantity, "days_until_arrival": pd.arrives_on - self._current_day})
             for pd in self._pending_deliveries
         ]
         return DayState(

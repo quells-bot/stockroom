@@ -33,7 +33,7 @@ if __name__ == "__main__":
     from strategy import DefaultStrategy
 
     result = run_simulations(DefaultStrategy, n_runs=100)
-    print(f"Average score: {result['average_score']:.0f}")
-    print()
     for i, run in enumerate(result["runs"], 1):
         print(f"  Run {i:2d}: score={run['score']:6d}  budget={run['final_budget']:6d}  dissatisfaction={run['dissatisfaction']:5d}")
+    print()
+    print(f"Average score: {result['average_score']:.0f}")
