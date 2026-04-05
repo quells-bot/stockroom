@@ -30,10 +30,9 @@ def run_simulations(strategy_class: type[Strategy], n_runs: int = 10) -> Simulat
 
 
 if __name__ == "__main__":
-    from strategy import DefaultStrategy
+    from strategy import NaiveStrategy, AdvancedHeuristicStrategy, ForwardLookingHeuristicStrategy
 
-    result = run_simulations(DefaultStrategy, n_runs=100)
-    for i, run in enumerate(result["runs"], 1):
-        print(f"  Run {i:2d}: score={run['score']:6d}  budget={run['final_budget']:6d}  dissatisfaction={run['dissatisfaction']:5d}")
-    print()
-    print(f"Average score: {result['average_score']:.0f}")
+    strategies = [NaiveStrategy, AdvancedHeuristicStrategy, ForwardLookingHeuristicStrategy]
+    for strategy_class in strategies:
+        result = run_simulations(strategy_class, n_runs=100)
+        print(f"{strategy_class.__name__}: avg={result['average_score']:.0f}")
