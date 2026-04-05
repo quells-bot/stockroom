@@ -40,7 +40,9 @@ You **MUST NOT** hard-code prices, ingredients, or menu items in your strategy. 
 - **Dissatisfaction**: Occurs when a customer's order cannot be fulfilled due to missing ingredients.
 
 ## Testing
-Tests are located in the `tests/` directory. Use `pytest` to run them.
-```bash
-pytest
-```
+
+You **MUST NOT** write any new pytest tests in `tests/*.py`. These are reserved for testing the simulation.
+
+If you need to test something for your new strategy, write some throwaway script to test that portion.
+
+Your key metric for gauging the effectiveness of your strategy is the output from `runner.py`.
