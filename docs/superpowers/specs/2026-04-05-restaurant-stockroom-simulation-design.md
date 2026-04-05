@@ -154,7 +154,7 @@ class Strategy(ABC):
 | `day_of_week` | `str` | e.g., "monday", "tuesday" |
 | `budget` | `int` | Remaining cash |
 | `inventory` | `dict[str, int]` | Ingredient -> unexpired unit count |
-| `pending_deliveries` | `list[PendingDelivery]` | Each has: ingredient, quantity, days_since_ordered |
+| `pending_deliveries` | `list[PendingDelivery]` | Each has: ingredient, quantity, days_until_arrival |
 | `today_revenue` | `int` | Revenue earned today |
 | `today_waste` | `dict[str, int]` | Ingredient -> units expired today |
 | `today_stockouts` | `list[StockoutEvent]` | Each has: menu item name, price |
@@ -166,7 +166,7 @@ class Strategy(ABC):
 |-------|------|-------------|
 | `ingredient` | `str` | What was ordered |
 | `quantity` | `int` | How many units |
-| `days_since_ordered` | `int` | How many days ago the order was placed |
+| `days_until_arrival` | `int` | Estimated days until delivery arrives |
 
 ### StockoutEvent
 
