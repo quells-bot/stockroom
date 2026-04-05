@@ -31,6 +31,14 @@ class DayState:
     history: list["DayState"] = field(default_factory=list)
 
 
+@dataclass
+class SimulationResult:
+    score: int
+    final_budget: int
+    dissatisfaction: int
+    days_simulated: int
+
+
 class Strategy(ABC):
     @abstractmethod
     def __init__(self, menu: list[MenuItem], ingredients: dict[str, Ingredient]):
@@ -113,3 +121,82 @@ class Simulation:
             self._pending_deliveries.append(
                 PendingDelivery(name, qty, self._current_day, arrives_on)
             )
+
+    def _day_of_week(self, day: int) -> str:
+        return self.DAY_NAMES[(day - 1) % 7]
+
+    def _generate_customers(self) -> list[MenuItem]:
+        dow = self._day_of_week(self._current_day)
+        low, high = self.TRAFFIC[dow]
+        if low == 0 and high == 0:
+            return []
+        count = random.randint(low, high)
+        return random.choices(self._menu, weights=self._menu_weights, k=count)
+
+    def _build_day_state(self, revenue: int, waste: dict[str, int], stockouts: list[StockoutEvent], history: list[DayState]) -> DayState:
+        inventory_counts = {name: len(expiry_list) for name, expiry_list in self._inventory.items()}
+        visible_deliveries = [
+            {"ingredient": pd.ingredient, "quantity": pd.quantity, "days_since_ordered": self._current_day - pd.ordered_on}
+            for pd in self._pending_deliveries
+        ]
+        return DayState(
+            day=self._current_day,
+            day_of_week=self._day_of_week(self._current_day),
+            budget=self._budget,
+            inventory=inventory_counts,
+            pending_deliveries=visible_deliveries,
+            today_revenue=revenue,
+            today_waste=waste,
+            today_stockouts=stockouts,
+            history=list(history),
+        )
+
+    def run(self) -> "SimulationResult":
+        # Process initial order
+        initial = self._strategy.initial_order(self._budget)
+        if initial:
+            total_cost = sum(self._ingredients[name].cost * qty for name, qty in initial.items())
+            if total_cost <= self._budget:
+                self._budget -= total_cost
+                for name, qty in initial.items():
+                    shelf_life = self._ingredients[name].shelf_life
+                    expiry = 1 + shelf_life  # delivered "before day 1", inventory as of day 1
+                    self._inventory[name].extend([expiry] * qty)
+
+        history: list[DayState] = []
+
+        for day in range(1, self.DURATION + 1):
+            self._current_day = day
+
+            # 1. Receive deliveries
+            self._receive_deliveries()
+
+            # 2. Expire inventory
+            waste = self._expire_inventory()
+
+            # 3-5. Generate and fill orders (skip if Monday)
+            revenue = 0
+            stockouts: list[StockoutEvent] = []
+            orders = self._generate_customers()
+            for item in orders:
+                if self._fill_order(item):
+                    revenue += item.price
+                    self._budget += item.price
+                else:
+                    self._dissatisfaction += item.price // 2
+                    stockouts.append(StockoutEvent(item.name, item.price))
+
+            # 6. Strategy decides orders
+            state = self._build_day_state(revenue, waste, stockouts, history)
+            order = self._strategy.decide_orders(state)
+            if order:
+                self._place_order(order)
+
+            history.append(state)
+
+        return SimulationResult(
+            score=self._budget - self._dissatisfaction,
+            final_budget=self._budget,
+            dissatisfaction=self._dissatisfaction,
+            days_simulated=self.DURATION,
+        )

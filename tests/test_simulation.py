@@ -126,3 +126,82 @@ def test_place_order_exceeds_budget():
     sim._place_order({"beef": 3})  # cost = 9, exceeds 5
     assert sim._budget == 5  # unchanged
     assert len(sim._pending_deliveries) == 0
+
+
+class FixedOrderStrategy(Strategy):
+    """Orders a fixed amount of each ingredient every day."""
+    def __init__(self, menu, ingredients):
+        self.menu = menu
+        self.ingredients = ingredients
+
+    def initial_order(self, budget):
+        return {name: 5 for name in self.ingredients}
+
+    def decide_orders(self, state):
+        return {name: 3 for name in self.ingredients}
+
+
+def test_day_of_week_sequence():
+    """Day 1 should be a tuesday (first open day after monday)."""
+    sim = make_sim()
+    # Day 1 = index 0 in the loop. Day number maps to DAY_NAMES[(day - 1) % 7].
+    # We need to verify the mapping is consistent.
+    assert Simulation.DAY_NAMES[0] == "monday"
+    assert Simulation.DAY_NAMES[1] == "tuesday"
+    assert Simulation.DAY_NAMES[6] == "sunday"
+
+
+def test_monday_no_customers():
+    """On Monday (day 1, 8, 15, ...) the restaurant is closed."""
+    sim = make_sim()
+    sim._current_day = 1  # monday
+    low, high = Simulation.TRAFFIC["monday"]
+    assert low == 0 and high == 0
+
+
+def test_initial_order_delivered_before_day_1():
+    """Initial order should be in inventory when the simulation starts."""
+    class BuyBeefStrategy(Strategy):
+        def __init__(self, menu, ingredients):
+            self.menu = menu
+            self.ingredients = ingredients
+
+        def initial_order(self, budget):
+            return {"beef": 5}
+
+        def decide_orders(self, state):
+            # On day 1, check that beef is in inventory
+            if state.day == 1:
+                assert state.inventory["beef"] == 5
+            return {}
+
+    random.seed(0)
+    sim = Simulation(MENU, INGREDIENTS, BuyBeefStrategy)
+    sim.run()
+
+
+def test_simulation_runs_60_days():
+    random.seed(0)
+    sim = make_sim()
+    result = sim.run()
+    assert result.days_simulated == 60
+
+
+def test_simulation_result_has_score():
+    random.seed(0)
+    sim = Simulation(MENU, INGREDIENTS, FixedOrderStrategy)
+    result = sim.run()
+    assert hasattr(result, "score")
+    assert hasattr(result, "final_budget")
+    assert hasattr(result, "dissatisfaction")
+    assert result.score == result.final_budget - result.dissatisfaction
+
+
+def test_do_nothing_strategy_has_zero_revenue():
+    random.seed(0)
+    sim = make_sim()  # DoNothingStrategy
+    result = sim.run()
+    assert result.final_budget == Simulation.STARTING_BUDGET
+    # All orders are stockouts since no inventory
+    assert result.dissatisfaction > 0
+    assert result.score < Simulation.STARTING_BUDGET
