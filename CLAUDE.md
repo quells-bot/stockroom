@@ -8,7 +8,7 @@ This repository contains a restaurant inventory management simulation. A `Simula
 ## Core Components
 - `simulation.py`: The `Simulation` engine and `Strategy` ABC. Handles daily cycles: receiving deliveries, expiring inventory, generating customers, and processing orders. Also defines `DayState`, `SimulationResult`, and related dataclasses.
 - `strategy.py`: Ordering strategy implementations. See `STRATEGY.md` when working here.
-- `menu.py`: Defines `INGREDIENTS` (costs, shelf lives) and `MENU` items (recipes, prices).
+- `menu.py`: Defines `INGREDIENTS` (costs, shelf lives) and `MENU` items (recipes, prices). All prices and costs are in **cents** (e.g. a $12.00 burger is `1200`).
 - `runner.py`: Runs multiple simulations across all strategies and reports average scores.
 
 ## Running Simulations
