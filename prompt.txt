@@ -1,4 +1,0 @@
-we are going to set up a simulation of a restaurant stock room. the player has a starting budget to buy ingredients and 10 of each ingredient and can decide  
-at the end of each day to put in an order for more. deliveries take 3-5 days after ordering to arrive (first thing in the morning). the player cannot spend more on ingredients than    
-they have budget for. ingredients go bad after a variable amount of time depending on their type. the restaurant has a fixed menu with a price for each item and a recipe for how much  
-of each item is consumed for an order. the restaurant is closed on mondays but can still receive deliveries. customer traffic is lower tuesday-wednesday and higher saturday-sunday.
