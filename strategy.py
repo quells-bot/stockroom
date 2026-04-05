@@ -1,3 +1,6 @@
+# strategy.py — Modify this file to implement your ordering strategy.
+# NaiveStrategy below is a working reference implementation you can study and replace.
+
 from simulation import Strategy, DayState
 from menu import MenuItem, Ingredient
 
@@ -17,7 +20,7 @@ class NaiveStrategy(Strategy):
                 item.recipe.get(name, 0) * orders_per_item
                 for item in menu
             )
-            self._daily_estimate[name] = int(usage) + 1
+            self._daily_estimate[name] = int(usage) + 1  # +1 safety buffer
 
     def initial_order(self, budget: int) -> dict[str, int]:
         # Buy 3 days worth
