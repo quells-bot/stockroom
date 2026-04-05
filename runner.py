@@ -15,10 +15,10 @@ class SimulationSummary(TypedDict):
     runs: list[RunResult]
 
 
-def run_simulations(strategy_class: type[Strategy], n_runs: int = 10) -> SimulationSummary:
+def run_simulations(strategy_class: type[Strategy], n_runs: int = 10, **strategy_kwargs) -> SimulationSummary:
     runs = []
     for _ in range(n_runs):
-        sim = Simulation(MENU, INGREDIENTS, strategy_class)
+        sim = Simulation(MENU, INGREDIENTS, strategy_class, **strategy_kwargs)
         result = sim.run()
         runs.append({
             "score": result.score,
