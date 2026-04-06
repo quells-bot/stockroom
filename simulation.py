@@ -147,12 +147,13 @@ class Simulation:
             return
         if stockouts:
             for _ in stockouts:
-                dow = random.choice(open_days)
-                self._traffic[dow][0] = max(0, self._traffic[dow][0] - 1)
-                self._traffic[dow][1] = max(0, self._traffic[dow][1] - 1)
-                open_days = [d for d, bounds in self._traffic.items() if bounds[0] > 0 or bounds[1] > 0]
-                if not open_days:
-                    return
+                if random.random() < 0.20:
+                    dow = random.choice(open_days)
+                    self._traffic[dow][0] = max(0, self._traffic[dow][0] - 1)
+                    self._traffic[dow][1] = max(0, self._traffic[dow][1] - 1)
+                    open_days = [d for d, bounds in self._traffic.items() if bounds[0] > 0 or bounds[1] > 0]
+                    if not open_days:
+                        return
         else:
             if random.random() < 0.10:
                 dow = random.choice(open_days)
