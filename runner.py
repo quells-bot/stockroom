@@ -30,9 +30,9 @@ def run_simulations(strategy_class: type[Strategy], n_runs: int = 10, **strategy
 
 
 if __name__ == "__main__":
-    from strategy import NaiveStrategy, AdvancedHeuristicStrategy, ForwardLookingHeuristicStrategy
+    from strategy import NaiveStrategy, AdvancedHeuristicStrategy, ForwardLookingHeuristicStrategy, BayesianAdaptiveStrategy
 
-    strategies = [NaiveStrategy, AdvancedHeuristicStrategy, ForwardLookingHeuristicStrategy]
+    strategies = [NaiveStrategy, AdvancedHeuristicStrategy, ForwardLookingHeuristicStrategy, BayesianAdaptiveStrategy]
     for strategy_class in strategies:
         result = run_simulations(strategy_class, n_runs=1000)
         print(f"{strategy_class.__name__}: avg={result['average_score']:.0f}")
