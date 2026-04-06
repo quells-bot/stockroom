@@ -84,6 +84,7 @@ class Simulation:
         self._dissatisfaction = 0
         self._current_day = 0
         self._menu_weights = [1.0 / item.price for item in menu]
+        self._traffic = {dow: list(bounds) for dow, bounds in self.TRAFFIC.items()}
 
     def _receive_deliveries(self):
         remaining = []
@@ -134,11 +135,30 @@ class Simulation:
 
     def _generate_customers(self) -> list[MenuItem]:
         dow = self._day_of_week(self._current_day)
-        low, high = self.TRAFFIC[dow]
+        low, high = self._traffic[dow]
         if low == 0 and high == 0:
             return []
         count = random.randint(low, high)
         return random.choices(self._menu, weights=self._menu_weights, k=count)
+
+    def _update_reputation(self, stockouts: list[StockoutEvent]):
+        open_days = [d for d, bounds in self._traffic.items() if bounds[0] > 0 or bounds[1] > 0]
+        if not open_days:
+            return
+        if stockouts:
+            for _ in stockouts:
+                if random.random() < 0.20:
+                    dow = random.choice(open_days)
+                    self._traffic[dow][0] = max(0, self._traffic[dow][0] - 1)
+                    self._traffic[dow][1] = max(0, self._traffic[dow][1] - 1)
+                    open_days = [d for d, bounds in self._traffic.items() if bounds[0] > 0 or bounds[1] > 0]
+                    if not open_days:
+                        return
+        else:
+            if random.random() < 0.10:
+                dow = random.choice(open_days)
+                self._traffic[dow][0] += 1
+                self._traffic[dow][1] += 1
 
     def _build_day_state(self, revenue: int, waste: dict[str, int], stockouts: list[StockoutEvent], history: list[DayState]) -> DayState:
         inventory_counts = {name: len(expiry_list) for name, expiry_list in self._inventory.items()}
@@ -193,7 +213,10 @@ class Simulation:
                     self._dissatisfaction += item.price // 2
                     stockouts.append(StockoutEvent(item.name, item.price))
 
-            # 6. Strategy decides orders
+            # 6. Update reputation based on stockouts
+            self._update_reputation(stockouts)
+
+            # 7. Strategy decides orders
             state = self._build_day_state(revenue, waste, stockouts, history)
             order = self._strategy.decide_orders(state)
             if order:

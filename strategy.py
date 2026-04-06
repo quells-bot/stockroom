@@ -6,7 +6,7 @@ from menu import MenuItem, Ingredient
 
 
 class NaiveStrategy(Strategy):
-    """Simple strategy: keep ~3 days of each ingredient in stock."""
+    """Simple strategy: keep ~4 days of each ingredient in stock."""
 
     def __init__(self, menu: list[MenuItem], ingredients: dict[str, Ingredient]):
         self.menu = menu
@@ -27,7 +27,7 @@ class NaiveStrategy(Strategy):
         order: dict[str, int] = {}
         total = 0
         for name, daily in self._daily_estimate.items():
-            qty = daily * 3
+            qty = daily * 4
             cost = qty * self.ingredients[name].cost
             if total + cost <= budget:
                 order[name] = qty
@@ -43,7 +43,7 @@ class NaiveStrategy(Strategy):
                 d.quantity for d in state.pending_deliveries
                 if d.ingredient == name
             )
-            target = daily * 3
+            target = daily * 4
             need = target - on_hand - pending
             if need > 0:
                 cost = need * self.ingredients[name].cost
@@ -300,7 +300,7 @@ class BayesianAdaptiveStrategy(Strategy):
 
             # Safety stock: use sqrt(forecast) as Poisson-like approximation
             # avoids inflated variance from traffic × usage product early on
-            safety = max(1, int(2.0 * forecasted[name] ** 0.5))
+            safety = max(1, int(2.5 * forecasted[name] ** 0.5))
 
             target = int(forecasted[name]) + safety
             need = target - int(effective_on_hand) - pending
@@ -386,9 +386,9 @@ class ForwardLookingHeuristicStrategy(Strategy):
                 if d.ingredient == name
             )
             
-            forecasted_demand = self._forecast_demand(4, state.day, name)
-            
-            safety_buffer = int(self._daily_estimate[name] * 2)
+            forecasted_demand = self._forecast_demand(5, state.day, name)
+
+            safety_buffer = int(self._daily_estimate[name] * 1)
             
             projected_stock = on_hand + pending - forecasted_demand
             need = safety_buffer - projected_stock

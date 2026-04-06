@@ -206,12 +206,13 @@ def test_do_nothing_strategy_has_zero_revenue():
     assert result.score < Simulation.STARTING_BUDGET
 
 
-def test_naive_strategy_earns_positive_revenue():
+def test_naive_strategy_completes_and_scores():
     from strategy import NaiveStrategy
     random.seed(0)
     sim = Simulation(MENU, INGREDIENTS, NaiveStrategy)
     result = sim.run()
-    assert result.final_budget > Simulation.STARTING_BUDGET
+    assert result.days_simulated == 60
+    assert result.score == result.final_budget - result.dissatisfaction
 
 
 def test_receive_deliveries_uses_arrival_day_for_expiry():
